@@ -107,7 +107,7 @@ export function AppSidebar() {
                       {session.data?.user?.clinic?.name}
                     </p>
                     <p className="text-muted-foreground truncate text-sm">
-                      {session.data?.user.email}
+                      {session.data?.user?.email}
                     </p>
                   </div>
                 </SidebarMenuButton>
