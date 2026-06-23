@@ -1,5 +1,6 @@
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useAction } from "next-safe-action/hooks";
+import { useEffect } from "react";
 import { useForm } from "react-hook-form";
 import { NumericFormat } from "react-number-format";
 import { toast } from "sonner";
@@ -68,11 +69,16 @@ const formSchema = z
   );
 
 interface UpsertDoctorFormProps {
+  isOpen: boolean;
   doctor?: typeof doctorsTable.$inferSelect;
   onSuccess?: () => void;
 }
 
-export function UpsertDoctorForm({ doctor, onSuccess }: UpsertDoctorFormProps) {
+export function UpsertDoctorForm({
+  doctor,
+  onSuccess,
+  isOpen,
+}: UpsertDoctorFormProps) {
   const form = useForm<z.infer<typeof formSchema>>({
     shouldUnregister: true,
     resolver: zodResolver(formSchema),
@@ -107,6 +113,19 @@ export function UpsertDoctorForm({ doctor, onSuccess }: UpsertDoctorFormProps) {
       appointmentPriceInCents: values.appointmentPrice * 100,
     });
   };
+
+  useEffect(() => {
+    if (isOpen) {
+      form.reset({
+        ...doctor,
+        appointmentPrice: doctor?.appointmentPriceInCents
+          ? doctor.appointmentPriceInCents / 100
+          : 0,
+        availableFromWeekDay: doctor?.availableFromWeekDay?.toString() ?? "1",
+        availableToWeekDay: doctor?.availableToWeekDay?.toString() ?? "5",
+      });
+    }
+  }, [isOpen, form, doctor]);
 
   return (
     <DialogContent>
