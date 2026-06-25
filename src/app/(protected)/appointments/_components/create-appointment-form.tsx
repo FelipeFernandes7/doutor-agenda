@@ -101,6 +101,7 @@ export function CreateAppointmentForm({
         date: dayjs(selectedDate).format("YYYY-MM-DD"),
         doctorId: selectedDoctorId,
       }),
+    enabled: !!selectedDoctorId && !!selectedDate,
   });
 
   const createAppointmentAction = useAction(createAppointment, {

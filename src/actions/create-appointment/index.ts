@@ -28,16 +28,20 @@ export const createAppointment = actionClient
       doctorId: parsedInput.doctorId,
       date: dayjs(parsedInput.date).format("YYYY-MM-DD"),
     });
+
     if (!availableTimes?.data) {
       throw new Error("No available times");
     }
+
     const requestedTime = parsedInput.time.substring(0, 5);
     const isTimeAvailable = availableTimes.data?.some(
       (time) => time.value === requestedTime && time.available,
     );
+
     if (!isTimeAvailable) {
       throw new Error("Time not available");
     }
+
     const appointmentDateTime = dayjs(parsedInput.date)
       .set("hour", parseInt(requestedTime.split(":")[0]))
       .set("minute", parseInt(requestedTime.split(":")[1]))
