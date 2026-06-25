@@ -54,10 +54,10 @@ const formSchema = z.object({
   appointmentPrice: z.number().min(1, {
     message: "Valor da consulta é obrigatório.",
   }),
-  appointmentDate: z.date({
-    error: "Data é obrigatória.",
+  date: z.date({
+    message: "Data é obrigatória.",
   }),
-  appointmentTime: z.string().min(1, {
+  time: z.string().min(1, {
     message: "Horário é obrigatório.",
   }),
 });
@@ -82,8 +82,8 @@ export function CreateAppointmentForm({
       patientId: "",
       doctorId: "",
       appointmentPrice: 0,
-      appointmentDate: undefined,
-      appointmentTime: "",
+      date: undefined,
+      time: "",
     },
   });
 
@@ -107,8 +107,8 @@ export function CreateAppointmentForm({
         patientId: "",
         doctorId: "",
         appointmentPrice: 0,
-        appointmentDate: undefined,
-        appointmentTime: "",
+        date: undefined,
+        time: "",
       });
     }
   }, [form, isOpen]);
@@ -135,7 +135,7 @@ export function CreateAppointmentForm({
   const onSubmit = (values: z.infer<typeof formSchema>) => {
     createAppointmentAction.execute({
       ...values,
-      appointmentPriceInCents: Math.round(values.appointmentPrice * 100),
+      appointmentPriceInCents: values.appointmentPrice * 100,
     });
   };
 
@@ -226,7 +226,7 @@ export function CreateAppointmentForm({
           />
           <FormField
             control={form.control}
-            name="appointmentDate"
+            name="date"
             render={({ field }) => (
               <FormItem className="flex flex-col">
                 <FormLabel>Data</FormLabel>
@@ -265,7 +265,7 @@ export function CreateAppointmentForm({
           />
           <FormField
             control={form.control}
-            name="appointmentTime"
+            name="time"
             render={({ field }) => (
               <FormItem>
                 <FormLabel>Horário</FormLabel>

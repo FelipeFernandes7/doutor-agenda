@@ -7,13 +7,13 @@ export const createAppointmentSchema = z.object({
   doctorId: z.string().uuid({
     message: "Médico é obrigatório.",
   }),
+  date: z.date({
+    message: "Data é obrigatória.",
+  }),
+  time: z.string().min(1, {
+    message: "Horário é obrigatório.",
+  }),
   appointmentPriceInCents: z.number().min(1, {
     message: "Valor da consulta é obrigatório.",
-  }),
-  appointmentDate: z.date({
-    required_error: "Data é obrigatória.",
-  }),
-  appointmentTime: z.string().trim().min(1, {
-    message: "Horário é obrigatório.",
   }),
 });

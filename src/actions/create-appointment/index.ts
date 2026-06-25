@@ -1,5 +1,6 @@
 "use server";
 
+import dayjs from "dayjs";
 import { revalidatePath } from "next/cache";
 import { headers } from "next/headers";
 
@@ -8,6 +9,7 @@ import { appointmentsTable } from "@/db/schema";
 import { auth } from "@/lib/auth";
 import { actionClient } from "@/lib/next-safe-action";
 
+import { getAvailableTimes } from "../get-available-times";
 import { createAppointmentSchema } from "./schema";
 
 export const createAppointment = actionClient
@@ -16,23 +18,34 @@ export const createAppointment = actionClient
     const session = await auth.api.getSession({
       headers: await headers(),
     });
-
     if (!session?.user) {
       throw new Error("Unauthorized");
     }
-
-    if (!session.user.clinic) {
-      throw new Error("User does not belong to any clinic.");
+    if (!session?.user.clinic?.id) {
+      throw new Error("Clinic not found");
     }
-
-    const [hours, minutes] = parsedInput.appointmentTime.split(":");
-    const appointmentDateTime = new Date(parsedInput.appointmentDate);
-    appointmentDateTime.setHours(Number(hours), Number(minutes), 0, 0);
+    const availableTimes = await getAvailableTimes({
+      doctorId: parsedInput.doctorId,
+      date: dayjs(parsedInput.date).format("YYYY-MM-DD"),
+    });
+    if (!availableTimes?.data) {
+      throw new Error("No available times");
+    }
+    const requestedTime = parsedInput.time.substring(0, 5);
+    const isTimeAvailable = availableTimes.data?.some(
+      (time) => time.value === requestedTime && time.available,
+    );
+    if (!isTimeAvailable) {
+      throw new Error("Time not available");
+    }
+    const appointmentDateTime = dayjs(parsedInput.date)
+      .set("hour", parseInt(requestedTime.split(":")[0]))
+      .set("minute", parseInt(requestedTime.split(":")[1]))
+      .toDate();
 
     await db.insert(appointmentsTable).values({
-      clinicId: session.user.clinic.id,
-      patientId: parsedInput.patientId,
-      doctorId: parsedInput.doctorId,
+      ...parsedInput,
+      clinicId: session?.user.clinic?.id,
       date: appointmentDateTime,
     });
 
