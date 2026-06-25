@@ -3,7 +3,16 @@ import { redirect } from "next/navigation";
 
 import { auth } from "@/lib/auth";
 
-import { SignOutButton } from "./_components/sign-out-button";
+import {
+  PageActions,
+  PageContainer,
+  PageContent,
+  PageDescription,
+  PageHeader,
+  PageHeaderContent,
+  PageTitle,
+} from "@/components/ui/page-container";
+import { DatePicker } from "./_components/date-picker";
 
 export default async function DashboardPage() {
   const session = await auth.api.getSession({
@@ -19,12 +28,19 @@ export default async function DashboardPage() {
   }
 
   return (
-    <div className="flex items-center space-x-4">
-      <div className="flex flex-col space-y-4">
-        <h1>{session?.user.name}</h1>
-        <h1>{session?.user.email}</h1>
-      </div>
-      <SignOutButton />
-    </div>
+    <PageContainer>
+      <PageHeader>
+        <PageHeaderContent>
+          <PageTitle>Dashboard</PageTitle>
+          <PageDescription>
+            Gerencie os pacientes cadastrados na clínica
+          </PageDescription>
+        </PageHeaderContent>
+        <PageActions>
+          <DatePicker />
+        </PageActions>
+      </PageHeader>
+      <PageContent>conteúdo</PageContent>
+    </PageContainer>
   );
 }
