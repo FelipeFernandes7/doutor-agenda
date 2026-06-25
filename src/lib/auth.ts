@@ -13,6 +13,9 @@ export const auth = betterAuth({
     usePlural: true,
     schema,
   }),
+  ssl: {
+    rejectUnauthorized: true, // equivalente ao verify-full
+  },
   socialProviders: {
     google: {
       clientId: process.env.GOOGLE_CLIENT_ID as string,

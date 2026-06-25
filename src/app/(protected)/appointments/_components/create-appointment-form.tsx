@@ -43,6 +43,9 @@ import {
 import { doctorsTable, patientsTable } from "@/db/schema";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { ptBR } from "date-fns/locale";
+import { useQuery } from "@tanstack/react-query";
+import { getAvailableTimes } from "@/actions/get-available-times";
+import dayjs from "dayjs";
 
 const formSchema = z.object({
   patientId: z.string().min(1, {
@@ -89,6 +92,16 @@ export function CreateAppointmentForm({
 
   const selectedPatientId = form.watch("patientId");
   const selectedDoctorId = form.watch("doctorId");
+  const selectedDate = form.watch("date");
+
+  const { data: availableTimes } = useQuery({
+    queryKey: ["available-times", selectedDoctorId, selectedDate],
+    queryFn: () =>
+      getAvailableTimes({
+        date: dayjs(selectedDate).format("YYYY-MM-DD"),
+        doctorId: selectedDoctorId,
+      }),
+  });
 
   const createAppointmentAction = useAction(createAppointment, {
     onSuccess: () => {
@@ -240,7 +253,7 @@ export function CreateAppointmentForm({
                       >
                         <CalendarIcon className="mr-2 h-4 w-4" />
                         {field.value ? (
-                          format(field.value, "PPP")
+                          format(field.value, "PPP", { locale: ptBR })
                         ) : (
                           <span>Selecionar data</span>
                         )}
@@ -280,12 +293,15 @@ export function CreateAppointmentForm({
                     </SelectTrigger>
                   </FormControl>
                   <SelectContent>
-                    <SelectItem value="09:00">09:00</SelectItem>
-                    <SelectItem value="10:00">10:00</SelectItem>
-                    <SelectItem value="11:00">11:00</SelectItem>
-                    <SelectItem value="14:00">14:00</SelectItem>
-                    <SelectItem value="15:00">15:00</SelectItem>
-                    <SelectItem value="16:00">16:00</SelectItem>
+                    {availableTimes?.data?.map((time) => (
+                      <SelectItem
+                        key={time.value}
+                        value={time.value}
+                        disabled={!time.available}
+                      >
+                        {time.value} {!time.available && "(Indisponível)"}
+                      </SelectItem>
+                    ))}
                   </SelectContent>
                 </Select>
                 <FormMessage />
