@@ -2,6 +2,7 @@
 
 import {
   CalendarDays,
+  Gem,
   LayoutDashboard,
   LogOut,
   Stethoscope,
@@ -92,6 +93,24 @@ export function AppSidebar() {
             </SidebarMenu>
           </SidebarGroupContent>
         </SidebarGroup>
+        <SidebarGroup>
+          <SidebarGroupLabel>Outros</SidebarGroupLabel>
+          <SidebarGroupContent>
+            <SidebarMenu>
+              <SidebarMenuItem>
+                <SidebarMenuButton
+                  asChild
+                  isActive={pathname === "/subscription"}
+                >
+                  <Link href="/subscription">
+                    <Gem />
+                    <span>Assinatura</span>
+                  </Link>
+                </SidebarMenuButton>
+              </SidebarMenuItem>
+            </SidebarMenu>
+          </SidebarGroupContent>
+        </SidebarGroup>
       </SidebarContent>
       <SidebarFooter>
         <SidebarMenu>
@@ -102,12 +121,12 @@ export function AppSidebar() {
                   <Avatar>
                     <AvatarFallback>F</AvatarFallback>
                   </Avatar>
-                  <div className="min-w-0 flex-1">
+                  <div>
                     <p className="text-sm">
                       {session.data?.user?.clinic?.name}
                     </p>
-                    <p className="text-muted-foreground truncate text-sm">
-                      {session.data?.user?.email}
+                    <p className="text-muted-foreground text-sm">
+                      {session.data?.user.email}
                     </p>
                   </div>
                 </SidebarMenuButton>
