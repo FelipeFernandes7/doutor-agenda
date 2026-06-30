@@ -1,3 +1,6 @@
+import { headers } from "next/headers";
+import { redirect } from "next/navigation";
+
 import {
   PageContainer,
   PageContent,
@@ -6,17 +9,16 @@ import {
   PageHeaderContent,
   PageTitle,
 } from "@/components/ui/page-container";
-import { SubscriptionPlan } from "./_components/subscription-plan";
-import { redirect } from "next/navigation";
-import { headers } from "next/headers";
 import { auth } from "@/lib/auth";
+
+import { SubscriptionPlan } from "./_components/subscription-plan";
 
 export default async function SubscriptionPage() {
   const session = await auth.api.getSession({
     headers: await headers(),
   });
-  if (!session?.user) {
-    redirect("/authentication");
+  if (!session) {
+    redirect("/login");
   }
   if (!session.user.clinic) {
     redirect("/clinic-form");
